@@ -548,9 +548,10 @@ func (gd *GRO) bucketForPacket6(ipHdr header.IPv6, tcpHdr header.TCP) int {
 // Flush sends all packets up the stack.
 func (gd *GRO) Flush() {
 	for i := range gd.buckets {
-		for groPkt := gd.buckets[i].packets.Front(); groPkt != nil; groPkt = groPkt.Next() {
+		bucket := &gd.buckets[i]
+		for groPkt := bucket.packets.Front(); groPkt != nil; groPkt = bucket.packets.Front() {
 			pkt := groPkt.pkt
-			gd.buckets[i].removeOne(groPkt)
+			bucket.removeOne(groPkt)
 			gd.handlePacket(pkt)
 			pkt.DecRef()
 		}
