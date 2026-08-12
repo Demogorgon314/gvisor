@@ -549,11 +549,13 @@ func (gd *GRO) bucketForPacket6(ipHdr header.IPv6, tcpHdr header.TCP) int {
 func (gd *GRO) Flush() {
 	for i := range gd.buckets {
 		bucket := &gd.buckets[i]
-		for groPkt := bucket.packets.Front(); groPkt != nil; groPkt = bucket.packets.Front() {
+		for groPkt := bucket.packets.Front(); groPkt != nil; {
+			next := groPkt.Next()
 			pkt := groPkt.pkt
 			bucket.removeOne(groPkt)
 			gd.handlePacket(pkt)
 			pkt.DecRef()
+			groPkt = next
 		}
 	}
 }
